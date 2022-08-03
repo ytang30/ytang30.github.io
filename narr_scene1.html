@@ -1,10 +1,10 @@
 <html>
 <script src='https://d3js.org/d3.v5.min.js'></script>
 
-<button id="btnall" type="button" onclick="window.location.href='file:///Users/tinatang/Downloads/narr_scene1.html';">All</button>
-<button id="btngas" type="button" onclick="window.location.href='file:///Users/tinatang/Downloads/narr_scene_gas.html';">Gasoline</button>
-<button id="btndiesel" type="button" onclick="window.location.href='file:///Users/tinatang/Downloads/narr_scene_diesel.html';">Diesel</button>
-<button id="btnelec" type="button" onclick="window.location.href='file:///Users/tinatang/Downloads/narr_scene_elec.html';">Electricity</button>
+<button id="btnall" type="button" onclick="window.location.href='narr_scene1.html';">All</button>
+<button id="btngas" type="button" onclick="window.location.href='narr_scene_gas.html';">Gasoline</button>
+<button id="btndiesel" type="button" onclick="window.location.href='narr_scene_diesel.html';">Diesel</button>
+<button id="btnelec" type="button" onclick="window.location.href='narr_scene_elec.html';">Electricity</button>
 
 <style> 
 circle {fill: lightblue; stroke: black; fill-opacity: 0.6} 
