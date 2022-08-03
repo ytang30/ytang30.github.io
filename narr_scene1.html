@@ -1,0 +1,167 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+
+<button id="btnall" type="button" onclick="loadPage('file:///Users/tinatang/Downloads/narr_scene1.html')">All</button>
+<button id="btngas" type="button" onclick="loadPage('file:///Users/tinatang/Downloads/narr_scene_gas.html')">Gasoline</button>
+<button id="btndiesel" type="button" onclick="loadPage('file:///Users/tinatang/Downloads/narr_scene_diesel.html')">Diesel</button>
+<button id="btnelec" type="button" onclick="loadPage('file:///Users/tinatang/Downloads/narr_scene_elec.html')">Electricity</button>
+
+<style> 
+circle {fill: lightblue; stroke: black; fill-opacity: 0.6} 
+#tooltip {
+    opacity: 0;
+    position: absolute;
+    text-align: left;
+    background-color: white;
+    border: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+#annotation {
+    opacity: 1;
+    position: absolute;
+    text-align: center;
+    background-color: white;
+    border: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    padding: 10px;
+    width: 500px;
+    height: 70px;
+}
+
+</style>
+
+<body onload='init()'>
+
+<svg width=1500 height=1500>
+</svg>
+
+<div id="tooltip"></div>
+<div id="annotation"></div>
+
+<script>
+
+//set button color
+d3.select("#btngas").style("background-color","red").style("opacity",0.6);
+d3.select("#btndiesel").style("background-color","yellow").style("opacity",0.6);
+d3.select("#btnelec").style("background-color","green").style("opacity",0.6);
+
+
+//load page
+function loadPage(url){
+  window.location = url;
+};
+
+async function init() {
+var margin=50,
+    width=500,
+    height=500;
+
+var colors = {"Gasoline":"red","Diesel":"yellow","Electricity":"green"}
+
+var y = d3.scaleLog().domain([10,150]).range([height,0]).base(10);
+
+var x = d3.scaleLog().domain([10,150]).range([0,width]).base(10);
+
+var data = await d3.csv("https://flunky.github.io/cars2017.csv");
+
+var tooltip = d3.select("#tooltip");
+var annotation = d3.select("#annotation");
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.selectAll("circle")
+.data(data)
+.enter()
+.append("circle")
+.attr("cx",function(d) {return x(d.AverageCityMPG);})
+.attr("cy",function(d) {return y(d.AverageHighwayMPG);})
+.attr("r",function(d) {return 5+Number.parseInt(d.EngineCylinders)})
+.style("fill",function(d) {return colors[d.Fuel];})
+.on("mouseover", function(d){
+	tooltip.style("opacity", 1)
+	       .style("left",(d3.mouse(this)[0]+90)+"px")
+               .style("top",(d3.mouse(this)[1])+"px")
+               .html("Make: "+d.Make+"<br />"+
+		     "Fuel: "+d.Fuel+"<br />"+
+                     "EnergyCylinders: "+d.EnergyCylinders+"<br />"+
+                     "AverageHighwayMPG: "+d.AverageHighwayMPG+"<br />"+
+                     "AverageCityMPG: "+d.AverageCityMPG);
+})
+.on("mouseout", function() {tooltip.style("opacity", 0)});
+
+annotation.style("left","150px")
+.style("top","450px")
+.html("Automobiles that consume different types of fuels showcase different levels of efficiency in terms of average city MPG and average highway MPG.")
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.call(d3.axisLeft(y).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+(height+margin)+")")
+.call(d3.axisBottom(x).tickValues([10,20,50,100]).tickFormat(d3.format("~s")));
+
+//add x axis label
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("text")
+.attr("text-anchor","start")
+.attr("x",margin+150)
+.attr("y",height+margin)
+.text("Average City MPG(log)");
+
+//add y axis label
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+(height+margin)+")")
+.append("text")
+.attr("text-anchor","start")
+.attr("transform","rotate(-90)")
+.attr("y",-margin+20)
+.attr("x",margin+100)
+.text("Average Highway MPG(log)");
+
+//add graph title
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("text")
+.attr("x",width/2)
+.attr("y",-margin/2)
+.attr("text-anchor","middle")
+.style("font-size","20px")
+.text("2017 Automobile Fuel Efficiency by Fuel Type");
+
+//add legends
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("circle").attr("cx",550).attr("cy",130)
+.attr("r", 6).style("fill", "red").style("fill-opacity",0.6);
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("text").attr("x", 570).attr("y", 130).text("Gasoline").style("font-size", "15px").attr("alignment-baseline","middle");
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("circle").attr("cx",550).attr("cy",150)
+.attr("r", 6).style("fill", "yellow").style("fill-opacity",0.6);
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("text").attr("x", 570).attr("y", 150).text("Diesel").style("font-size", "15px").attr("alignment-baseline","middle");
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("circle").attr("cx",550).attr("cy",170)
+.attr("r", 6).style("fill", "green").style("fill-opacity",0.6);
+
+d3.select("svg").append("g")
+.attr("transform","translate("+margin+","+margin+")")
+.append("text").attr("x", 570).attr("y", 170).text("Electricity").style("font-size", "15px").attr("alignment-baseline","middle");
+}
+</script>
+</body>
+</html>
